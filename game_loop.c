@@ -43,6 +43,7 @@ int main(int argc, char const *argv[])
 					{
 						SDL_DestroyWindow(window);
 						window = NULL;
+						done = 1;
 					}
 				}
 				break;
