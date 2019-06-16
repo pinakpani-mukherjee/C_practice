@@ -8,7 +8,7 @@ typedef struct $
 	char *name;	
 } Man;
 
-int processEvents(SDL_Window *window) //window passed in by reference
+int processEvents(SDL_Window *window,Man *man) //window passed in by reference
 {
 	SDL_Event event;
 	int done = 0;
@@ -26,7 +26,6 @@ int processEvents(SDL_Window *window) //window passed in by reference
 					}
 				}
 				break;
-				case SDL_KEYDOWN:
 				{
 					switch(event.key.keysym.sym)
 					{
@@ -34,6 +33,7 @@ int processEvents(SDL_Window *window) //window passed in by reference
 							done = 1;
 						break;
 					}
+						
 				}
 				break;
 				case SDL_QUIT:
@@ -42,7 +42,42 @@ int processEvents(SDL_Window *window) //window passed in by reference
 				break;
 			}
 		}
+
+	const Uint8 *state = SDL_GetKeyboardState(NULL);
+	if(state[SDL_SCANCODE_LEFT])
+	{
+		man->x -= 10;  							 //because it is a reference, we do not use man.x or man .y
+    }                                            //we use man->x and man->y
+	if(state[SDL_SCANCODE_RIGHT])
+	{
+		man->x += 10;
+	}
+	if(state[SDL_SCANCODE_UP])
+	{
+		man->y -= 10;
+	}
+	if(state[SDL_SCANCODE_DOWN])
+	{
+		man->y += 10;
+	}
+
+
 	return done;
+}
+
+void doRender(SDL_Renderer *renderer, Man *man)
+{
+	SDL_SetRenderDrawColor(renderer,0,0,255,255);
+    //clears screen to blue
+	SDL_RenderClear(renderer);
+    //sets the draw color to white
+	SDL_SetRenderDrawColor(renderer,255,255,255,255);
+
+	SDL_Rect rect = {man->x,man->y,200,200};  //positions of rectangle
+	SDL_RenderFillRect(renderer,&rect); //creates the rectangle
+    //presents the drawing,shows to the screen
+	SDL_RenderPresent(renderer);
+
 }
 
 int main(int argc, char const *argv[])
@@ -51,6 +86,10 @@ int main(int argc, char const *argv[])
 	SDL_Renderer *renderer;
 
 	SDL_Init(SDL_INIT_VIDEO);
+
+	Man man;
+	man.x = 220;
+	man.y = 140;
 
 	window = SDL_CreateWindow("Game Window",          //name of game window
 							 SDL_WINDOWPOS_UNDEFINED, //initial x position
@@ -69,21 +108,12 @@ int main(int argc, char const *argv[])
 	while(!done)
 	{
 	//check for events
-	if(processEvents(window)== 1)
+	if(processEvents(window,&man)== 1)
 		done = 1;
-	
-	SDL_SetRenderDrawColor(renderer,0,0,255,255);
-    //clears screen to blue
-	SDL_RenderClear(renderer);
-    //sets the draw color to white
-	SDL_SetRenderDrawColor(renderer,255,255,255,255);
-
-	SDL_Rect rect = {220,140,200,200};  //positions of rectangle
-	SDL_RenderFillRect(renderer,&rect); //creates the rectangle
-    //presents the drawing,shows to the screen
-	SDL_RenderPresent(renderer);
-    //waits to quit after ~ miliseconds
-	SDL_Delay(100);
+	//renders display
+	doRender(renderer, &man);
+	//waits to quit after ~ miliseconds
+	SDL_Delay(20);
 	}
 
 	SDL_DestroyWindow(window);    //destroys the window
