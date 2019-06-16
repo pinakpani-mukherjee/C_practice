@@ -8,32 +8,11 @@ typedef struct $
 	char *name;	
 } Man;
 
-int main(int argc, char const *argv[])
+int processEvents(SDL_Window *window) //window passed in by reference
 {
-	SDL_Window *window;
-	SDL_Renderer *renderer;
-
-	SDL_Init(SDL_INIT_VIDEO);
-
-	window = SDL_CreateWindow("Game Window",          //name of game window
-							 SDL_WINDOWPOS_UNDEFINED, //initial x position
-							 SDL_WINDOWPOS_UNDEFINED, //initial y position
-							 640,                    //width of window
-							 480,                     //height of window
-							 0                        //flags
-		                     );
-
-	renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
-
-	//entering the program loop
-	int done = 0;//boolean to check if game is completed
 	SDL_Event event;
-
-	//entering the event loop
-	while(!done)
-	{
-		//check for events
-		while(SDL_PollEvent(&event))
+	int done = 0;
+	while(SDL_PollEvent(&event))
 		{
 			switch(event.type)
 			{
@@ -63,6 +42,36 @@ int main(int argc, char const *argv[])
 				break;
 			}
 		}
+	return done;
+}
+
+int main(int argc, char const *argv[])
+{
+	SDL_Window *window;
+	SDL_Renderer *renderer;
+
+	SDL_Init(SDL_INIT_VIDEO);
+
+	window = SDL_CreateWindow("Game Window",          //name of game window
+							 SDL_WINDOWPOS_UNDEFINED, //initial x position
+							 SDL_WINDOWPOS_UNDEFINED, //initial y position
+							 640,                    //width of window
+							 480,                     //height of window
+							 0                        //flags
+		                     );
+
+	renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
+
+	//entering the program loop
+	int done = 0;//boolean to check if game is completed
+
+	//entering the event loop
+	while(!done)
+	{
+	//check for events
+	if(processEvents(window)== 1)
+		done = 1;
+	
 	SDL_SetRenderDrawColor(renderer,0,0,255,255);
     //clears screen to blue
 	SDL_RenderClear(renderer);
